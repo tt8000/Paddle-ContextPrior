@@ -6,10 +6,11 @@ import cv2
 
 
 class CPDataset(paddle.io.Dataset):
-    def __init__(self, data_txt, mode='train', transforms=None):
+    def __init__(self, data_txt, mode='train', num_classes=150, transforms=None):
         super(CPDataset, self).__init__()
         assert mode in ['train', 'val', 'test'], "mode is one of ['train', 'val', 'test']"
         self.mode = mode
+        self.num_classes = num_classes
         self.transforms = transforms
         self.data = []
         with open(data_txt) as f:
