@@ -6,12 +6,14 @@ import cv2
 
 
 class CPDataset(paddle.io.Dataset):
-    def __init__(self, data_txt, mode='train', num_classes=150, transforms=None):
+    def __init__(self, data_txt, mode='train', num_classes=150, transforms=None, ignore_index=255, start_index_with_1=True):
         super(CPDataset, self).__init__()
         assert mode in ['train', 'val', 'test'], "mode is one of ['train', 'val', 'test']"
         self.mode = mode
         self.num_classes = num_classes
         self.transforms = transforms
+        self.ignore_index = ignore_index
+        self.start_index_with_1 = start_index_with_1
         self.data = []
         with open(data_txt) as f:
             for line in f.readlines():
@@ -27,9 +29,11 @@ class CPDataset(paddle.io.Dataset):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             label = np.array(Image.open(self.data[idx][1]))
             if self.transforms:
-                img, label = self.transforms(img, label)              
-            label = label - 1
-            label[label == -1] = 255
+                img, label = self.transforms(img, label)
+
+            if self.start_index_with_1:              
+                label = label - 1
+                label[label == -1] = self.ignore_index
             return img, label.astype('int64')
         else:
             img = cv2.imread(self.data[idx]).astype('float32')
