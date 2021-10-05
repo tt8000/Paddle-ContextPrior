@@ -1,0 +1,2 @@
+paddlepaddle==2.1.2
+paddleseg==2.2.0
